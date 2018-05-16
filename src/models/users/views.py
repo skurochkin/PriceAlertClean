@@ -1,11 +1,22 @@
-from flask import Blueprint
+from flask import Blueprint, request, session, url_for, render_template
+from werkzeug.utils import redirect
+
+from src.models.users.user import User
 
 user_blueprint = Blueprint('users', __name__)
 
 
 @user_blueprint.route('/login')
 def login_user():
-    pass
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['hashed']
+
+        if User.is_login_valid(email, password):
+            session['email'] = email
+            return redirect(url_for(".user_alerts"))
+
+    return render_template("users/login.html") # Send the user an error if their Login was incorrect
 
 @user_blueprint.route('/register')
 def register_user():
